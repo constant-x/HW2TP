@@ -1,12 +1,12 @@
-# README
+# Recipe Manager
 
 Проект для управления рецептами, масштабирования порций и формирования списка покупок.
 
 ## Установка
 
 ```bash
-git clone <ваш-репозиторий>
-cd <папка-проекта>
+git clone https://github.com/constant-x/HW2TP.git
+cd HW2TP
 pip install -r requirements.txt
 ```
 
