@@ -84,3 +84,59 @@ class DietaryRecipe(Recipe):
     def __str__(self):
         base_str = super().__str__()
         return f"[{self.diet_type}] {base_str}"
+
+
+class ShoppingList:
+    def __init__(self):
+        self._items = []
+
+    def add_recipe(self, recipe, portions):
+        if not isinstance(recipe, Recipe):
+            raise ValueError("Можно добавлять только объекты класса Recipe")
+        if not isinstance(portions, (int, float)) or isinstance(portions, bool) or portions <= 0:
+        # убрал bool, по аналогии выше
+            raise ValueError("Количество порций должно быть положительным")
+
+        scaled_recipe = recipe.scale(portions)
+        for ingredient in scaled_recipe.ingredients:
+            self._items.append((ingredient, recipe.title))
+
+    def remove_recipe(self, title):
+        self._items = [
+            (ingredient, recipe_title)
+            for ingredient, recipe_title in self._items
+            if recipe_title != title
+        ]
+
+    def get_list(self):
+        shopping_dict = {}
+        for ingredient, _ in self._items:
+            key = (ingredient.name, ingredient.unit)
+            if key in shopping_dict:
+                shopping_dict[key] += ingredient.quantity
+            else:
+                shopping_dict[key] = ingredient.quantity
+
+        shopping_list = [
+            Ingredient(name, quantity, unit)
+            for (name, unit), quantity in shopping_dict.items()
+        ]
+        return sorted(shopping_list, key=lambda ingredient: ingredient.name)
+
+    def __add__(self, other):
+        if not isinstance(other, ShoppingList):
+            return NotImplemented
+
+        result = ShoppingList()
+        for ingredient, recipe_title in self._items + other._items:
+            copied_ingredient = Ingredient(
+                ingredient.name,
+                ingredient.quantity,
+                ingredient.unit,
+            )
+            result._items.append((copied_ingredient, recipe_title))
+        return result
+
+    def __str__(self):
+        shopping_list = self.get_list()
+        return "Список покупок:\n" + "\n".join(str(ing) for ing in shopping_list)
