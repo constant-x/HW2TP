@@ -69,3 +69,18 @@ class Recipe:
 
     def __len__(self):
         return len(self.ingredients)
+
+
+class DietaryRecipe(Recipe):
+    def __init__(self, title, diet_type, ingredients=None):
+        # ingredients=None чтобы можно было создать пустой рецепт, к примеру: Recipe("Торт")
+        super().__init__(title, ingredients)
+        self.diet_type = diet_type
+
+    def scale(self, ratio: float):
+        scaled_recipe = super().scale(ratio)
+        return DietaryRecipe(self.title, self.diet_type, scaled_recipe.ingredients)
+
+    def __str__(self):
+        base_str = super().__str__()
+        return f"[{self.diet_type}] {base_str}"
